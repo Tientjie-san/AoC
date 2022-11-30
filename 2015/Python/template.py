@@ -8,7 +8,7 @@ def part2(input: List[str]) -> int:
     return 0
 
 def main():
-    puzzle_input = read_file("dayx.txt")
+    puzzle_input = read_file("dayx")
     print(part1(puzzle_input))
     print(part2(puzzle_input))
 
