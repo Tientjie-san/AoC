@@ -25,7 +25,8 @@ def not_contain_bad_sub(word:str):
     return True
 
 def nice_pair(word:str):
-    pairs = [word[i:i+2]for i in range(len(word)-1) ]
+    pairs = [word[i:i+2]for i in range(len(word)-1)]
+
     for i in range(len(pairs)-1):
         if pairs[i] in pairs[i+2:]:
             return True
@@ -58,9 +59,6 @@ def main():
     puzzle_input = read_file("day5")
     print(part1(puzzle_input))
     print(part2(puzzle_input))
-    print(nice_pair("qjhvhtzxzqqjkmpb"))
-    print(nice_pair("xxyxx"))
-
 
 if __name__ == "__main__":
     main()
