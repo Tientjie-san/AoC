@@ -3,8 +3,10 @@ from typing import List
 import hashlib
 
 def part1(input: List[str]) -> int:
+
     prefix = input[0]
     i = 0
+
     while True:
 
         hash_result = hashlib.md5((prefix + str(i)).encode())
@@ -15,8 +17,10 @@ def part1(input: List[str]) -> int:
         i += 1
 
 def part2(input: List[str]) -> int:
+    
     prefix = input[0]
     i = 0
+
     while True:
 
         hash_result = hashlib.md5((prefix + str(i)).encode())
