@@ -2,54 +2,92 @@ from utils import read_file
 from typing import List
 
 class Directory:
-    def __init__(self, key: str):
-        self.key: str = key
-        self.dirs = set()
+    def __init__(self, name: str, parent = None):
+        self.parent= parent
+        self.name: str = name
+        self.dirs = dict()
         self.files = []
     
-    def __repr__(self):
-        return f"{self.key} contains dictionaries:  {[dir.key for dir in self.dirs]} and has {self.files} files"
-
     def get_size(self):
         total = 0
-        for dir in self.dirs:
+        for dir in self.dirs.values():
             total += dir.get_size()
         total += sum(self.files)
+        global sizes
+        sizes.append(total)
         return total
+
+    def __repr__(self):
+        return f"name: {self.name},\n directories : {self.dirs},\n files : {self.files}"
+
 
 def part1(input: List[str]) -> int:
 
-    filesystem = dict()
+    main_directory = Directory("/")
+    current_directory = main_directory
+
     for line in input:
         line = line.split(" ")
 
-        if line[0] == "$" and line[1] == "cd" and line[2] != "..":
-            if line[2] not in filesystem:
-                current_directory = Directory(line[2])
-                filesystem[current_directory.key] = current_directory
-            else:
-                current_directory = filesystem[line[2]]
         if line[0] == "$" and line[1] == "ls":
             continue
-        if line[0] == "dir":
-            new_directory = Directory(line[1])
-            if new_directory.key not in filesystem:
-                filesystem[new_directory.key] = new_directory
-            current_directory.dirs.add(new_directory)
-        if line[0].isdigit():
+        elif line[0] == "dir":
+            directory_name = line[1]
+            if directory_name not in current_directory.dirs:
+                current_directory.dirs[directory_name] = Directory(directory_name, current_directory)
+        elif line[0].isdigit():
             current_directory.files.append(int(line[0]))
+        elif line[0] == "$" and line[1] == "cd" and line[2] != "..":
+            directory_name = line[2]
+            if directory_name == "/":
+                current_directory = main_directory
+            else:
+                current_directory = current_directory.dirs[directory_name]
+        elif line[0] == "$" and line[1] == "cd" and line[2] == "..":
+            current_directory = current_directory.parent
 
-    return sum(dir.get_size() for dir in filesystem.values() if dir.get_size() <= 100000)
-        
-        
-
-
-
+    global sizes 
+    sizes = []
+    main_directory.get_size()
+    return sum([ size for size in sizes if size <= 100000])
 
             
-    
 def part2(input: List[str]) -> int:
-    return 0
+        
+    main_directory = Directory("/")
+    current_directory = main_directory
+
+    for line in input:
+        line = line.split(" ")
+
+        if line[0] == "$" and line[1] == "ls":
+            continue
+        elif line[0] == "dir":
+            directory_name = line[1]
+            if directory_name not in current_directory.dirs:
+                current_directory.dirs[directory_name] = Directory(directory_name, current_directory)
+        elif line[0].isdigit():
+            current_directory.files.append(int(line[0]))
+        elif line[0] == "$" and line[1] == "cd" and line[2] != "..":
+            directory_name = line[2]
+            if directory_name == "/":
+                current_directory = main_directory
+            else:
+                current_directory = current_directory.dirs[directory_name]
+        elif line[0] == "$" and line[1] == "cd" and line[2] == "..":
+            current_directory = current_directory.parent
+
+    global sizes 
+    sizes = []
+
+    max_memory = 70000000
+    min_open = 30000000
+    
+    available = max_memory - main_directory.get_size()
+    to_delete = min_open - available
+
+    return min([ size for size in sizes if size >= to_delete])
+
 
 def main():
     puzzle_input = read_file("day7")
